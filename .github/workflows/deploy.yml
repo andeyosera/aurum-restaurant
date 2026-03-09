@@ -1,0 +1,52 @@
+name: Deploy Aurum Restaurant
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  # Check frontend builds successfully
+  build-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: npm install
+
+      - name: Build frontend
+        working-directory: ./frontend
+        run: npm run build
+        env:
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+
+  # Check backend is valid
+  check-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install backend dependencies
+        working-directory: ./backend
+        run: npm install
+
+      - name: Verify backend starts
+        working-directory: ./backend
+        run: node -e "require('./src/app.js')" &
+        env:
+          PORT: 3000
+          EMAIL_USER: test@test.com
+          EMAIL_PASS: test
+          FRONTEND_URL: http://localhost:5173
