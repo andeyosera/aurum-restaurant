@@ -12,10 +12,9 @@ export default function Contact() {
     <main style={{ minHeight: '100vh', paddingTop: '8rem', paddingBottom: '6rem' }}>
       <div style={{ maxWidth: '800px', margin: '0 auto', padding: '0 2rem' }}>
         <p style={{ color: 'var(--gold)', letterSpacing: '0.4em', fontSize: '0.7rem', textTransform: 'uppercase', marginBottom: '1rem' }}>Find Us</p>
-        <h1 style={{ fontSize: 'clamp(2.5rem, 5vw, 4rem)', fontWeight: 300, marginBottom: '4rem' }}>
+        <h1 style={{ fontSize: 'clamp(2.5rem, 5vw, 4rem)', fontWeight: 300, marginBottom: '4rem', fontFamily: 'Cormorant Garamond' }}>
           We'd Love to <em style={{ color: 'var(--gold)' }}>Hear</em> from You
         </h1>
-
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '0' }}>
           {info.map((item, i) => (
             <div key={item.label} style={{
@@ -28,8 +27,6 @@ export default function Contact() {
             </div>
           ))}
         </div>
-
-        {/* Map placeholder */}
         <div style={{
           marginTop: '4rem', height: '300px',
           background: 'var(--brown-mid)',

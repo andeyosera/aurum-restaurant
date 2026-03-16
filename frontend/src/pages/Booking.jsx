@@ -1,62 +1,58 @@
 import { useState } from 'react'
-const [loading, setLoading] = useState(false)
 
 const inputStyle = {
   width: '100%', background: 'rgba(255,255,255,0.05)',
   border: '1px solid rgba(201,169,110,0.3)',
   color: 'var(--cream)', padding: '0.9rem 1.2rem',
   fontSize: '0.9rem', fontFamily: 'Jost', fontWeight: 300,
-  outline: 'none', transition: 'border 0.3s',
+  outline: 'none',
 }
 
 export default function Booking() {
   const [form, setForm] = useState({ name: '', email: '', phone: '', date: '', time: '', guests: '2', requests: '' })
   const [submitted, setSubmitted] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value })
 
   const handleSubmit = async e => {
-  e.preventDefault()
-  setLoading(true)
-
-  try {
-    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/bookings`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form),
-    })
-
-    const data = await res.json()
-
-    if (res.ok) {
-      setSubmitted(true)
-    } else {
-      alert(data.message || 'Something went wrong.')
+    e.preventDefault()
+    setLoading(true)
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/bookings`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      })
+      const data = await res.json()
+      if (res.ok) {
+        setSubmitted(true)
+      } else {
+        alert(data.message || 'Something went wrong.')
+      }
+    } catch {
+      alert('Could not connect to server. Please try again.')
+    } finally {
+      setLoading(false)
     }
-  } catch (err) {
-    alert('Could not connect to server. Please try again.')
-  } finally {
-    setLoading(false)
   }
-}
 
   return (
     <main style={{ minHeight: '100vh', paddingTop: '8rem', paddingBottom: '6rem' }}>
       <div style={{ maxWidth: '640px', margin: '0 auto', padding: '0 2rem' }}>
         <p style={{ color: 'var(--gold)', letterSpacing: '0.4em', fontSize: '0.7rem', textTransform: 'uppercase', marginBottom: '1rem' }}>Reservations</p>
-        <h1 style={{ fontSize: 'clamp(2.5rem, 5vw, 4rem)', fontWeight: 300, marginBottom: '0.8rem' }}>
+        <h1 style={{ fontSize: 'clamp(2.5rem, 5vw, 4rem)', fontWeight: 300, marginBottom: '0.8rem', fontFamily: 'Cormorant Garamond' }}>
           Reserve Your <em style={{ color: 'var(--gold)' }}>Evening</em>
         </h1>
         <p style={{ color: 'var(--text-light)', marginBottom: '3rem', lineHeight: 1.8, fontSize: '0.9rem' }}>
-          We recommend booking at least 3 days in advance. For parties of 6 or more, please call us directly.
+          We recommend booking at least 3 days in advance.
         </p>
-
         {submitted ? (
           <div style={{ textAlign: 'center', padding: '4rem 2rem', border: '1px solid rgba(201,169,110,0.3)' }}>
             <div style={{ fontSize: '3rem', marginBottom: '1.5rem' }}>🕯️</div>
-            <h2 style={{ fontSize: '2rem', fontWeight: 300, color: 'var(--gold)', marginBottom: '1rem' }}>Reservation Received</h2>
+            <h2 style={{ fontSize: '2rem', fontWeight: 300, color: 'var(--gold)', marginBottom: '1rem', fontFamily: 'Cormorant Garamond' }}>Reservation Received</h2>
             <p style={{ color: 'var(--text-light)', lineHeight: 1.8 }}>
-              Thank you, {form.name}. We'll confirm your reservation at {form.email} within 24 hours.
+              Thank you, {form.name}. We'll confirm your reservation at {form.email} shortly.
             </p>
           </div>
         ) : (
@@ -71,7 +67,6 @@ export default function Booking() {
                 <input name="email" type="email" value={form.email} onChange={handleChange} required placeholder="your@email.com" style={inputStyle} />
               </div>
             </div>
-
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.2rem' }}>
               <div>
                 <label style={{ display: 'block', fontSize: '0.7rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--gold)', marginBottom: '0.5rem' }}>Date</label>
@@ -87,12 +82,11 @@ export default function Booking() {
                 </select>
               </div>
             </div>
-
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.2rem' }}>
               <div>
                 <label style={{ display: 'block', fontSize: '0.7rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--gold)', marginBottom: '0.5rem' }}>Guests</label>
                 <select name="guests" value={form.guests} onChange={handleChange} style={inputStyle}>
-                  {[1,2,3,4,5].map(n => <option key={n} value={n}>{n} {n === 1 ? 'Guest' : 'Guests'}</option>)}
+                  {[1, 2, 3, 4, 5].map(n => <option key={n} value={n}>{n} {n === 1 ? 'Guest' : 'Guests'}</option>)}
                 </select>
               </div>
               <div>
@@ -100,23 +94,20 @@ export default function Booking() {
                 <input name="phone" value={form.phone} onChange={handleChange} placeholder="+254 700 000000" style={inputStyle} />
               </div>
             </div>
-
             <div>
               <label style={{ display: 'block', fontSize: '0.7rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--gold)', marginBottom: '0.5rem' }}>Special Requests</label>
               <textarea name="requests" value={form.requests} onChange={handleChange} placeholder="Dietary requirements, allergies, special occasions..." rows={4} style={{ ...inputStyle, resize: 'vertical' }} />
             </div>
-
             <button type="submit" disabled={loading} style={{
-  background: 'var(--gold)', color: 'var(--brown-dark)',
-  border: 'none', padding: '1.1rem',
-  fontSize: '0.75rem', letterSpacing: '0.25em', textTransform: 'uppercase',
-  cursor: loading ? 'not-allowed' : 'pointer',
-  opacity: loading ? 0.7 : 1,
-  fontFamily: 'Jost', fontWeight: 400,
-  marginTop: '0.5rem', transition: 'opacity 0.3s',
-}}>
-  {loading ? 'Sending...' : 'Confirm Reservation'}
-          </button>
+              background: 'var(--gold)', color: 'var(--brown-dark)',
+              border: 'none', padding: '1.1rem',
+              fontSize: '0.75rem', letterSpacing: '0.25em', textTransform: 'uppercase',
+              cursor: loading ? 'not-allowed' : 'pointer',
+              opacity: loading ? 0.7 : 1,
+              fontFamily: 'Jost', fontWeight: 400, marginTop: '0.5rem',
+            }}>
+              {loading ? 'Sending...' : 'Confirm Reservation'}
+            </button>
           </form>
         )}
       </div>
