@@ -1,3 +1,5 @@
+console.log('MYSQL_URL:', process.env.MYSQL_URL);
+console.log('MYSQLHOST:', process.env.MYSQLHOST);
 const pool = require('./db');
 pool.query(`
   CREATE TABLE IF NOT EXISTS bookings (
