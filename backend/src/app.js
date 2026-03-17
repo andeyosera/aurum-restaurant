@@ -17,7 +17,7 @@ pool.query(`
   .catch(err => console.error('❌ Table error:', err.message));
 const express = require('express');
 const cors = require('cors');
-require('dotenv').config();
+
 
 const bookingRoutes = require('./routes/bookings');
 
