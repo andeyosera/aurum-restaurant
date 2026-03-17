@@ -1,3 +1,18 @@
+const pool = require('./db');
+pool.query(`
+  CREATE TABLE IF NOT EXISTS bookings (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    phone VARCHAR(20),
+    date DATE NOT NULL,
+    time VARCHAR(10) NOT NULL,
+    guests INT DEFAULT 2,
+    requests TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  )
+`).then(() => console.log('✅ Bookings table ready'))
+  .catch(err => console.error('❌ Table error:', err.message));
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
