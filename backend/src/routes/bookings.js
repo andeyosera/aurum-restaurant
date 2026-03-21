@@ -11,7 +11,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// POST /api/bookings — create booking
+// POST /api/bookings
 router.post('/', async (req, res) => {
   const { name, email, phone, date, time, guests, requests } = req.body;
 
@@ -23,7 +23,7 @@ router.post('/', async (req, res) => {
     // Save to database
     await pool.query(
       'INSERT INTO bookings (name, email, phone, date, time, guests, requests) VALUES (?, ?, ?, ?, ?, ?, ?)',
-      [name, email, phone, date, time, guests || 2, requests]
+      [name, email, phone || null, date, time, guests || 2, requests || null]
     );
 
     // Email to customer
@@ -32,30 +32,30 @@ router.post('/', async (req, res) => {
       to: email,
       subject: 'Your Reservation at Aurum — Confirmed',
       html: `
-        <div style="font-family: Georgia, serif; max-width: 560px; margin: 0 auto; color: #1a1008;">
-          <div style="background: #1a1008; padding: 2rem; text-align: center;">
-            <h1 style="color: #c9a96e; letter-spacing: 0.3em; font-size: 1.8rem;">AURUM</h1>
+        <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#1a1008;">
+          <div style="background:#1a1008;padding:2rem;text-align:center;">
+            <h1 style="color:#c9a96e;letter-spacing:0.3em;font-size:1.8rem;">AURUM</h1>
           </div>
-          <div style="padding: 2.5rem; background: #f5efe6;">
-            <p style="color: #c9a96e; font-size: 0.8rem; letter-spacing: 0.2em; text-transform: uppercase;">Reservation Confirmed</p>
-            <h2 style="font-size: 1.8rem; font-weight: 300; margin: 0.5rem 0 1.5rem;">Dear ${name},</h2>
-            <p style="line-height: 1.8; color: #4a2f1a;">We are delighted to confirm your reservation at Aurum.</p>
-            <div style="margin: 2rem 0; padding: 1.5rem; border-left: 3px solid #c9a96e; background: #fff;">
+          <div style="padding:2.5rem;background:#f5efe6;">
+            <p style="color:#c9a96e;font-size:0.8rem;letter-spacing:0.2em;text-transform:uppercase;">Reservation Confirmed</p>
+            <h2 style="font-size:1.8rem;font-weight:300;margin:0.5rem 0 1.5rem;">Dear ${name},</h2>
+            <p style="line-height:1.8;color:#4a2f1a;">We are delighted to confirm your reservation at Aurum. We look forward to welcoming you.</p>
+            <div style="margin:2rem 0;padding:1.5rem;border-left:3px solid #c9a96e;background:#fff;">
               <p><strong>Date:</strong> ${date}</p>
               <p><strong>Time:</strong> ${time}</p>
               <p><strong>Guests:</strong> ${guests}</p>
               ${requests ? `<p><strong>Special Requests:</strong> ${requests}</p>` : ''}
             </div>
-            <p style="margin-top: 2rem; color: #4a2f1a;">Warmly,<br/><strong>The Aurum Team</strong></p>
+            <p style="margin-top:2rem;color:#4a2f1a;">Warmly,<br/><strong>The Aurum Team</strong></p>
           </div>
-          <div style="background: #2e1a0e; padding: 1rem; text-align: center;">
-            <p style="color: #c9a96e; font-size: 0.75rem;">14 Riverside Drive, Westlands, Nairobi · +254 700 123 456</p>
+          <div style="background:#2e1a0e;padding:1rem;text-align:center;">
+            <p style="color:#c9a96e;font-size:0.75rem;">14 Riverside Drive, Westlands, Nairobi · +254 700 123 456</p>
           </div>
         </div>
       `,
     });
 
-    // Email to restaurant
+    // Email to restaurant owner
     await transporter.sendMail({
       from: `"Aurum Bookings" <${process.env.EMAIL_USER}>`,
       to: process.env.EMAIL_USER,
@@ -75,12 +75,12 @@ router.post('/', async (req, res) => {
     res.status(201).json({ message: 'Booking confirmed! Check your email.' });
 
   } catch (err) {
-    console.error(err);
+    console.error('Booking error:', err);
     res.status(500).json({ message: 'Something went wrong.', error: err.message });
   }
 });
 
-// GET /api/bookings — get all bookings (admin)
+// GET /api/bookings — view all bookings
 router.get('/', async (req, res) => {
   try {
     const [bookings] = await pool.query(
